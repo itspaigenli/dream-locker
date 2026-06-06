@@ -25,12 +25,23 @@ function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
         <button type="button" onClick={onArchiveClick}>
           Archive
         </button>
-        <button type="button" onClick={() => onPageChange("signup")}>
-          Sign Up
-        </button>
-        <button type="button" onClick={() => onPageChange("login")}>
-          Login
-        </button>
+        {currentUser ? (
+          <>
+            <span className="nav-user">Signed in: {currentUser.username}</span>
+            <button type="button" onClick={onLogout}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <button type="button" onClick={() => onPageChange("login")}>
+              Login
+            </button>
+            <button type="button" onClick={() => onPageChange("signup")}>
+              Sign Up
+            </button>
+          </>
+        )}
       </nav>
     </header>
   );
