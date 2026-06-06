@@ -38,6 +38,8 @@ function LoginPage({ API_URL, onLoginSuccess }) {
       }
 
       setMessage(data.message);
+      onLoginSuccess(data.token, data.user);
+
       setForm({
         identifier: "",
         password: "",
