@@ -28,6 +28,8 @@ function App() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
+  const [token, setToken] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     getReports();
@@ -66,6 +68,13 @@ function App() {
       ...form,
       [name]: value,
     });
+  }
+
+  function handleLoginSuccess(newToken, user) {
+    setToken(newToken);
+    setCurrentUser(user);
+    setMessage(`Logged in as ${user.username}`);
+    setPage("dashboard");
   }
 
   async function openArchive() {
