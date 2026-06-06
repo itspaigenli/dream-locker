@@ -69,6 +69,10 @@ router.post('/signin', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({ error: "JWT secret is missing" });
+        }
+
         const token = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
             process.env.JWT_SECRET,
