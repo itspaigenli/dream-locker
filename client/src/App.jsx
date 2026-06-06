@@ -9,6 +9,7 @@ import ReportsPage from "./components/ReportsPage.jsx";
 import { authenticatedFetch } from "../api/authenticatedFetch.js";
 import SignupPage from "./components/SignupPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
+import { authenticatedFetch } from "../api/authenticatedFetch.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
