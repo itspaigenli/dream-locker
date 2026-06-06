@@ -1,4 +1,4 @@
-function Header({ onPageChange, onArchiveClick }) {
+function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
   return (
     <header className="site-header">
       <button
