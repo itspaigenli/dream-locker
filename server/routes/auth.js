@@ -43,5 +43,47 @@ router.post('/signup', validateSignup, async (req, res) => {
 });
 
 // Signin
+router.post('/signin', async (req, res) => {
+    // Use email or username to login
+    const identifier = req.body.identifier?.trim();
+    const { password } = req.body;
+
+    if (!identifier || !password) {
+      return res.status(400).json({ error: 'Username/Email and password are required' });
+    }
+
+    try {
+        const result = await pool.query(
+            `SELECT * FROM users WHERE username = $1 OR email = $2`,
+            [identifier, identifier.toLowerCase()]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const user = result.rows[0];
+
+        const isMatch = await comparePassword(password, user.password_hash);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const token = jwt.sign(
+            { id: user.id, username: user.username, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+
+        res.json({
+            message: 'Login successful',
+            token,
+            user: { id: user.id, username: user.username, role: user.role }
+        });
+    } catch (error) {
+        console.error('Login Error:', error);
+        res.status(500).json({ error: 'Internal server error during login' });
+    }
+})
 
 export default router;
