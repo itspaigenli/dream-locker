@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
 =======
 function Header({ onPageChange, onArchiveClick, isLoggedIn }) {
 >>>>>>> 31f0dbb (Signup/Login button disappear after login)
+=======
+function Header({ onPageChange, onArchiveClick, isLoggedIn, onLogout }) {
+>>>>>>> bf6054d (Add logout function)
   return (
     <header className="site-header">
       <button
@@ -63,7 +67,7 @@ function Header({ onPageChange, onArchiveClick, isLoggedIn }) {
             </button>
           </>
         ) : (
-          <button type="button" onClick={() => onPageChange("login")}>
+          <button onClick={onLogout} className="btn-logout">
             Logout
           </button>
         )

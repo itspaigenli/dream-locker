@@ -31,6 +31,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [token, setToken] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
+  // Check if token is T/F
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
 
   useEffect(() => {
@@ -154,9 +155,16 @@ function App() {
     return total + report.symbols.split(",").length;
   }, 0);
 
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setPage("dashboard");
+  }
+
   return (
     <main>
-      <Header onPageChange={setPage} onArchiveClick={openArchive} />
+      <Header onPageChange={setPage} onArchiveClick={openArchive} isLoggedIn={isLoggedIn}/>
 
       {message && <p className="notice">{message}</p>}
 
