@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import pool from "./db/pool.js";
 import authRoutes from "./routes/auth.js";
+import { authMiddleware, requireRole } from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -68,7 +69,8 @@ app.get("/api/reports/:id", async (req, res) => {
   res.json(result.rows[0]);
 });
 
-app.get("/api/archive", async (req, res) => {
+// Only investigators or admins can access archived files!
+app.get("/api/archive", authMiddleware, requireRole(['investigator', 'admin']), async (req, res) => {
   const result = await pool.query(`
     SELECT
       dream_reports.id,
