@@ -77,6 +77,13 @@ function App() {
     setPage("dashboard");
   }
 
+  function handleLogout() {
+    setToken("");
+    setCurrentUser(null);
+    setMessage("Logged out");
+    setPage("dashboard");
+  }
+
   async function openArchive() {
     await getArchivedReports();
     setPage("archive");
@@ -147,7 +154,12 @@ function App() {
 
   return (
     <main>
-      <Header onPageChange={setPage} onArchiveClick={openArchive} />
+      <Header
+        onPageChange={setPage}
+        onArchiveClick={openArchive}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+      />
 
       {message && <p className="notice">{message}</p>}
 
