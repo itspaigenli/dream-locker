@@ -1,6 +1,10 @@
 import { useState } from "react";
 
+<<<<<<< HEAD
 function LoginPage({ API_URL, onLoginSuccess }) {
+=======
+function LoginPage({ API_URL, setPage }) {
+>>>>>>> ae5e58c (Jump to dashboard after login)
   const [form, setForm] = useState({
     identifier: "",
     password: "",
@@ -37,6 +41,11 @@ function LoginPage({ API_URL, onLoginSuccess }) {
         return;
       }
 
+      localStorage.setItem("token", data.token);
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
       setMessage(data.message);
       onLoginSuccess(data.token, data.user);
 
@@ -44,6 +53,7 @@ function LoginPage({ API_URL, onLoginSuccess }) {
         identifier: "",
         password: "",
       });
+      setPage("dashboard");
     } catch {
       setMessage("Could not connect to the server.");
     }
