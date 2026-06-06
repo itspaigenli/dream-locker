@@ -150,7 +150,7 @@ function App() {
       <Header
         onPageChange={setPage}
         onArchiveClick={openArchive}
-        currentUser={currentUser}
+        currentUser={token ? currentUser : null}
         onLogout={handleLogout}
       />
 
