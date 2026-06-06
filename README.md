@@ -28,8 +28,6 @@ This project does not yet have:
 - Test coverage for grading requirements
 - Security review work
 
-Those items are the hackathon grading focus and should be written by the team during that part of the project.
-
 ## Tech Stack
 
 - PostgreSQL
