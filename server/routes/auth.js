@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { pool } from '../db/pool.js';
+import pool from '../db/pool.js';
 import { hashPassword, comparePassword } from '../utils/password.js';
 import { validateSignup } from '../middleware/validateAuth.js';
 
@@ -36,8 +36,9 @@ router.post('/signup', validateSignup, async (req, res) => {
             }
 
             return res.status(409).json({ error: 'Account already exists' });
+        } else {
+            res.status(500).json({ error: 'Registration failed.' });
         }
-        res.status(500).json({ error: 'Registration failed.' });
     }
 });
 
