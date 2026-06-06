@@ -37,6 +37,10 @@ function LoginPage({ API_URL }) {
     }
 
     setMessage(data.message);
+    setForm({
+      identifier: "",
+      password: "",
+    });
   }
 
   return (
