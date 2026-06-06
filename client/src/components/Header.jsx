@@ -25,6 +25,9 @@ function Header({ onPageChange, onArchiveClick }) {
         <button type="button" onClick={onArchiveClick}>
           Archive
         </button>
+        <button type="button" onClick={() => onPageChange("signup")}>
+          Sign Up
+        </button>
       </nav>
     </header>
   );
