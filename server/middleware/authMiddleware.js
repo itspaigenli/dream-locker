@@ -22,3 +22,21 @@ export const authMiddleware = (req, res, next) => {
         return res.status(403).json({ error: 'Invalid or expired token.' });
     }
 }
+
+// Middleware to authorize specific roles
+export const requireRole = (allowedRoles) => {
+    return (req, res, next) => {
+        // Ensure authentication middleware ran successfully first
+        if (!req.user) {
+            return res.status(401).json({ error: 'Login first.' });
+        }
+
+        // Check if the user's role is included in the permitted roles list
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({ error: 'Sorry, You do not have permission to access this resource.' });
+        }
+
+        // Role authorized, proceed to the route handler
+        next();
+    }
+}
