@@ -142,7 +142,7 @@ app.put("/api/reports/:id", authMiddleware, async (req, res) => {
   res.json(result.rows[0]);
 });
 
-app.get("/api/report-links", async (req, res) => {
+app.get("/api/report-links", authMiddleware, requireRole(["investigator", "admin"]), async (req, res) => {
   const result = await pool.query(`
     SELECT
       report_links.id,

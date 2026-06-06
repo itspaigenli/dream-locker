@@ -18,7 +18,7 @@ export const authMiddleware = (req, res, next) => {
         // Pass control to the next middleware or route handler
         next();
     } catch (error) {
-        console.error(error);
+        console.error(error.message);
         return res.status(403).json({ error: 'No access in your role.' });
     }
 }
