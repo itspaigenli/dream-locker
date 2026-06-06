@@ -23,28 +23,32 @@ function SignupPage({ API_URL }) {
 
     setMessage("Creating account...");
 
-    const response = await fetch(`${API_URL}/auth/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch(`${API_URL}/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      setMessage(data.error);
-      return;
+      if (!response.ok) {
+        setMessage(data.error);
+        return;
+      }
+
+      setMessage(data.message);
+
+      setForm({
+        username: "",
+        email: "",
+        password: "",
+      });
+    } catch {
+      setMessage("Could not connect to the server.");
     }
-
-    setMessage(data.message);
-
-    setForm({
-      username: "",
-      email: "",
-      password: "",
-    });
   }
 
   return (
@@ -60,6 +64,7 @@ function SignupPage({ API_URL }) {
             value={form.username}
             onChange={updateForm}
             placeholder="mara"
+            required
           />
         </label>
 
@@ -67,9 +72,11 @@ function SignupPage({ API_URL }) {
           Email
           <input
             name="email"
+            type="email"
             value={form.email}
             onChange={updateForm}
             placeholder="mara@example.com"
+            required
           />
         </label>
 
@@ -81,6 +88,7 @@ function SignupPage({ API_URL }) {
             value={form.password}
             onChange={updateForm}
             placeholder="ExamplePassword1!"
+            required
           />
         </label>
 
