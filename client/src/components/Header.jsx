@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
+=======
+function Header({ onPageChange, onArchiveClick, isLoggedIn }) {
+>>>>>>> 31f0dbb (Signup/Login button disappear after login)
   return (
     <header className="site-header">
       <button
@@ -22,6 +26,7 @@ function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
         <button type="button" onClick={() => onPageChange("links")}>
           Links
         </button>
+<<<<<<< HEAD
         <button type="button" onClick={onArchiveClick}>
           Archive
         </button>
@@ -42,6 +47,29 @@ function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
             </button>
           </>
         )}
+=======
+        {isLoggedIn && <button type="button" onClick={onArchiveClick}>
+            Archive
+          </button>
+        }
+
+        {!isLoggedIn ? (
+          <>
+            <button type="button" onClick={() => onPageChange("signup")}>
+              Sign Up
+            </button>
+            <button type="button" onClick={() => onPageChange("login")}>
+              Login
+            </button>
+          </>
+        ) : (
+          <button type="button" onClick={() => onPageChange("login")}>
+            Logout
+          </button>
+        )
+      }
+       
+>>>>>>> 31f0dbb (Signup/Login button disappear after login)
       </nav>
     </header>
   );

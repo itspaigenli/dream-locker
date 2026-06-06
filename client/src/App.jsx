@@ -31,6 +31,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [token, setToken] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
 
   useEffect(() => {
     getReports();
@@ -155,12 +156,7 @@ function App() {
 
   return (
     <main>
-      <Header
-        onPageChange={setPage}
-        onArchiveClick={openArchive}
-        currentUser={token ? currentUser : null}
-        onLogout={handleLogout}
-      />
+      <Header onPageChange={setPage} onArchiveClick={openArchive} />
 
       {message && <p className="notice">{message}</p>}
 
@@ -219,9 +215,7 @@ function App() {
 
       {page === "signup" && <SignupPage API_URL={API_URL} setPage={setPage} />}
 
-      {page === "login" && (
-        <LoginPage API_URL={API_URL} setPage={setPage} onLoginSuccess={handleLoginSuccess} />
-      )}
+      {page === "login" && <LoginPage API_URL={API_URL} setPage={setPage} />}
     </main>
   );
 }
