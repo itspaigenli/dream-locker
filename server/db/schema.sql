@@ -1,0 +1,34 @@
+DROP TABLE IF EXISTS report_links;
+DROP TABLE IF EXISTS dream_reports;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username TEXT NOT NULL UNIQUE,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'dreamer',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE dream_reports (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  symbols TEXT,
+  location TEXT,
+  visibility TEXT NOT NULL DEFAULT 'public',
+  archived BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE report_links (
+  id SERIAL PRIMARY KEY,
+  source_report_id INTEGER NOT NULL REFERENCES dream_reports(id) ON DELETE CASCADE,
+  target_report_id INTEGER NOT NULL REFERENCES dream_reports(id) ON DELETE CASCADE,
+  investigator_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reason TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

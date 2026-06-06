@@ -8,7 +8,9 @@
     "dev": "nodemon index.js",
     "test": "vitest",
     "db:connect": "psql -d locker_db",
-    "db:check": "psql -d postgres -c \"SELECT version();\""
+    "db:check": "psql -d postgres -c \"SELECT version();\"",
+    "db:schema": "psql -d locker_db -f db/schema.sql",
+    "db:seed": "psql -d locker_db -f db/seed.sql"
   },
   "keywords": [],
   "author": "",
