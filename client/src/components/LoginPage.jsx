@@ -21,26 +21,30 @@ function LoginPage({ API_URL }) {
     event.preventDefault();
 
     setMessage("Signing in...");
-    const response = await fetch(`${API_URL}/auth/signin`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch(`${API_URL}/auth/signin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      setMessage(data.error);
-      return;
+      if (!response.ok) {
+        setMessage(data.error);
+        return;
+      }
+
+      setMessage(data.message);
+      setForm({
+        identifier: "",
+        password: "",
+      });
+    } catch {
+      setMessage("Could not connect to the server.");
     }
-
-    setMessage(data.message);
-    setForm({
-      identifier: "",
-      password: "",
-    });
   }
 
   return (
@@ -56,6 +60,7 @@ function LoginPage({ API_URL }) {
             value={form.identifier}
             onChange={updateForm}
             placeholder="mara or mara@example.com"
+            required
           />
         </label>
 
@@ -67,6 +72,7 @@ function LoginPage({ API_URL }) {
             value={form.password}
             onChange={updateForm}
             placeholder="ExamplePassword1!"
+            required
           />
         </label>
 
