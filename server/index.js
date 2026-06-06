@@ -90,9 +90,10 @@ app.get("/api/archive", authMiddleware, requireRole(['investigator', 'admin']), 
   res.json(result.rows);
 });
 
-app.post("/api/reports", async (req, res) => {
+// Anyone with a valid account can create a report.
+app.post("/api/reports", authMiddleware, async (req, res) => {
   const { title, description, symbols, location, visibility } = req.body;
-  const temporaryUserId = 1;
+  const userId = req.user.id;
 
   const result = await pool.query(
     `
@@ -107,7 +108,7 @@ app.post("/api/reports", async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `,
-    [temporaryUserId, title, description, symbols, location, visibility]
+    [userId, title, description, symbols, location, visibility]
   );
 
   res.status(201).json(result.rows[0]);
