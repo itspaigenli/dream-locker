@@ -165,7 +165,7 @@ function App() {
 
   return (
     <main>
-      <Header onPageChange={setPage} onArchiveClick={openArchive} isLoggedIn={isLoggedIn} onLogout={handleLogout}/>
+      <Header onPageChange={setPage} onArchiveClick={openArchive} isLoggedIn={isLoggedIn} currentUser={currentUser} onLogout={handleLogout}/>
 
       {message && <p className="notice">{message}</p>}
 
