@@ -13,6 +13,22 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ 
+        error: 'Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)' 
+      });
+    }
+
+    if (username.length < 3 || username.length > 20) {
+      return res.status(400).json({ error: 'Username must be between 3 and 20 characters' });
+    }
+
     try {
         const hashedPassword = await hashPassword(password);
 
@@ -28,7 +44,17 @@ router.post('/signup', async (req, res) => {
     } catch (error) {
         console.error(error);
         if (error.code === '23505') {
-            return res.status(409).json({ error: 'Username or Email already exists' });
+            const detail = error.detail || '';
+
+            if (detail.includes('email')){
+                return res.status(409).json({ error: 'Email already exists' });
+            }
+
+            if (detail.includes('username')){
+                return res.status(409).json({ error: 'Username already exists' });
+            }
+
+            return res.status(409).json({ error: 'Account already exists' });
         }
         res.status(500).json({ error: 'Registration failed.' });
     }
