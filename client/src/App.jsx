@@ -27,6 +27,8 @@ function App() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
+  const [token, setToken] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     getReports();
@@ -59,6 +61,20 @@ function App() {
       ...form,
       [name]: value,
     });
+  }
+
+  function handleLoginSuccess(newToken, user) {
+    setToken(newToken);
+    setCurrentUser(user);
+    setMessage(`Logged in as ${user.username}`);
+    setPage("dashboard");
+  }
+
+  function handleLogout() {
+    setToken("");
+    setCurrentUser(null);
+    setMessage("Logged out");
+    setPage("dashboard");
   }
 
   async function openArchive() {
@@ -131,7 +147,12 @@ function App() {
 
   return (
     <main>
-      <Header onPageChange={setPage} onArchiveClick={openArchive} />
+      <Header
+        onPageChange={setPage}
+        onArchiveClick={openArchive}
+        currentUser={token ? currentUser : null}
+        onLogout={handleLogout}
+      />
 
       {message && <p className="notice">{message}</p>}
 
@@ -188,7 +209,9 @@ function App() {
 
       {page === "signup" && <SignupPage API_URL={API_URL} />}
 
-      {page === "login" && <LoginPage API_URL={API_URL} />}
+      {page === "login" && (
+        <LoginPage API_URL={API_URL} onLoginSuccess={handleLoginSuccess} />
+      )}
     </main>
   );
 }
