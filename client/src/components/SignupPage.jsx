@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function SignupPage() {
+function SignupPage({ API_URL }) {
   const [form, setForm] = useState({
     username: "",
     email: "",
