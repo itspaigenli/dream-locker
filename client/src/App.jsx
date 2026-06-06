@@ -41,17 +41,20 @@ function App() {
 
   async function getArchivedReports() {
     try {
-      const response = await authenticatedFetch("/archive");
-      setArchivedReports(response);
+      const data = await authenticatedFetch("/archive");
+      setArchivedReports(data);
     } catch (error) {
       setMessage(error.message);
     }
   }
 
   async function getLinks() {
-    const response = await fetch(`${API_URL}/report-links`);
-    const data = await response.json();
-    setLinks(data);
+    try {
+      const data = await authenticatedFetch("/report-links");
+      setLinks(data);
+    } catch (error) {
+      setMessage(error.message);
+    }
   }
 
   function updateForm(event) {
