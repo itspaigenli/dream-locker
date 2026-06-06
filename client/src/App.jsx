@@ -111,19 +111,19 @@ function App() {
   async function updateReport(event) {
     event.preventDefault();
 
-    const response = await fetch(`${API_URL}/reports/${selectedReport.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const data = await authenticatedFetch(`/reports/${selectedReport.id}`, {
+        method: "PUT",
+        body: JSON.stringify(form),
+      });
 
-    const updatedReport = await response.json();
-    setMessage(`Report updated: ${updatedReport.title}`);
-    await getReports();
-    setSelectedReport(updatedReport);
-    setPage("report");
+      setMessage(`Report updated: ${data.title}`);
+      await getReports();
+      setSelectedReport(data);
+      setPage("report");
+    } catch (error) {
+      setMessage(error.message);
+    }
   }
 
   const symbolCount = reports.reduce((total, report) => {
