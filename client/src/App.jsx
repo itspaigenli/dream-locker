@@ -93,19 +93,19 @@ function App() {
   async function createReport(event) {
     event.preventDefault();
 
-    const response = await fetch(`${API_URL}/reports`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const data = await authenticatedFetch("/reports", {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
 
-    const newReport = await response.json();
-    setMessage(`Report filed: ${newReport.title}`);
-    setForm(emptyForm);
-    await getReports();
-    setPage("reports");
+      setMessage(`Report filed: ${data.title}`);
+      setForm(emptyForm);
+      await getReports();
+      setPage("reports");
+    } catch (error) {
+      setMessage(error.message);
+    }
   }
 
   async function updateReport(event) {
