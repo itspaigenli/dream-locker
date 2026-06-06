@@ -39,6 +39,12 @@ function SignupPage({ API_URL }) {
     }
 
     setMessage(data.message);
+
+    setForm({
+      username: "",
+      email: "",
+      password: "",
+    });
   }
 
   return (
