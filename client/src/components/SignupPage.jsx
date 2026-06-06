@@ -22,6 +22,23 @@ function SignupPage({ API_URL }) {
     event.preventDefault();
 
     setMessage("Creating account...");
+
+    const response = await fetch(`${API_URL}/auth/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setMessage(data.error);
+      return;
+    }
+
+    setMessage(data.message);
   }
 
   return (
