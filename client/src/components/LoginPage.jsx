@@ -6,6 +6,8 @@ function LoginPage() {
     password: "",
   });
 
+  const [message, setMessage] = useState("");
+
   function updateForm(event) {
     const { name, value } = event.target;
 
@@ -18,6 +20,7 @@ function LoginPage() {
     <section className="panel form-panel">
       <p className="section-label">Account Access</p>
       <h1>Login</h1>
+      {message && <p className="notice">{message}</p>}
       <form>
         <label>
           Username or Email
