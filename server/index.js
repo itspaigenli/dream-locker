@@ -19,8 +19,6 @@ app.get("/api/reports", async (req, res) => {
   const result = await pool.query(`
     SELECT
       dream_reports.id,
-      dream_reports.user_id,
-      users.username,
       dream_reports.title,
       dream_reports.description,
       dream_reports.symbols,
@@ -30,7 +28,6 @@ app.get("/api/reports", async (req, res) => {
       dream_reports.created_at,
       dream_reports.updated_at
     FROM dream_reports
-    JOIN users ON users.id = dream_reports.user_id
     WHERE dream_reports.visibility = 'public'
       AND dream_reports.archived = false
     ORDER BY dream_reports.created_at DESC
@@ -44,8 +41,6 @@ app.get("/api/reports/:id", async (req, res) => {
     `
       SELECT
         dream_reports.id,
-        dream_reports.user_id,
-        users.username,
         dream_reports.title,
         dream_reports.description,
         dream_reports.symbols,
@@ -55,7 +50,6 @@ app.get("/api/reports/:id", async (req, res) => {
         dream_reports.created_at,
         dream_reports.updated_at
       FROM dream_reports
-      JOIN users ON users.id = dream_reports.user_id
       WHERE dream_reports.id = $1
         AND dream_reports.visibility = 'public'
         AND dream_reports.archived = false
@@ -71,8 +65,29 @@ app.get("/api/reports/:id", async (req, res) => {
   res.json(result.rows[0]);
 });
 
+app.get("/api/archive", async (req, res) => {
+  const result = await pool.query(`
+    SELECT
+      dream_reports.id,
+      dream_reports.title,
+      dream_reports.description,
+      dream_reports.symbols,
+      dream_reports.location,
+      dream_reports.visibility,
+      dream_reports.archived,
+      dream_reports.created_at,
+      dream_reports.updated_at
+    FROM dream_reports
+    WHERE dream_reports.archived = true
+    ORDER BY dream_reports.updated_at DESC
+  `);
+
+  res.json(result.rows);
+});
+
 app.post("/api/reports", async (req, res) => {
-  const { user_id, title, description, symbols, location, visibility } = req.body;
+  const { title, description, symbols, location, visibility } = req.body;
+  const temporaryUserId = 1;
 
   const result = await pool.query(
     `
@@ -87,7 +102,7 @@ app.post("/api/reports", async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `,
-    [user_id, title, description, symbols, location, visibility]
+    [temporaryUserId, title, description, symbols, location, visibility]
   );
 
   res.status(201).json(result.rows[0]);
@@ -128,8 +143,6 @@ app.get("/api/report-links", async (req, res) => {
       source_report.title AS source_title,
       report_links.target_report_id,
       target_report.title AS target_title,
-      report_links.investigator_id,
-      users.username AS investigator_name,
       report_links.reason,
       report_links.created_at
     FROM report_links
@@ -137,7 +150,6 @@ app.get("/api/report-links", async (req, res) => {
       ON source_report.id = report_links.source_report_id
     JOIN dream_reports AS target_report
       ON target_report.id = report_links.target_report_id
-    JOIN users ON users.id = report_links.investigator_id
     ORDER BY report_links.created_at DESC
   `);
 
