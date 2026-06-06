@@ -18,6 +18,30 @@ function LoginPage() {
     <section className="panel form-panel">
       <p className="section-label">Account Access</p>
       <h1>Login</h1>
+      <form>
+        <label>
+          Username or Email
+          <input
+            name="identifier"
+            value={form.identifier}
+            onChange={updateForm}
+            placeholder="mara or mara@example.com"
+          />
+        </label>
+
+        <label>
+          Password
+          <input
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={updateForm}
+            placeholder="ExamplePassword1!"
+          />
+        </label>
+
+        <button type="submit">Login</button>
+      </form>
     </section>
   );
 }
