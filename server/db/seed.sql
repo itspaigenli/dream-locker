@@ -1,9 +1,9 @@
 INSERT INTO users (username, email, password_hash, role)
 VALUES
-  ('mara', 'mara@example.com', 'placeholder_hash_mara', 'dreamer'),
-  ('sol', 'sol@example.com', 'placeholder_hash_sol', 'dreamer'),
-  ('iris', 'iris@example.com', 'placeholder_hash_iris', 'investigator'),
-  ('admin', 'admin@example.com', 'placeholder_hash_admin', 'admin');
+  ('mara', 'mara@example.com', '$2b$10$20Hh/rHrY.auzKx59ClwpOPtmvw52yErUYvng6WALJt3v1Rv7mWJO', 'dreamer'),
+  ('sol', 'sol@example.com', '$2b$10$cZXBmatE0N1k7sjY1d9uWOyPknCKxymj9oeVluhR7A5hryUu/gZ3y', 'dreamer'),
+  ('iris', 'iris@example.com', '$2b$10$Ft3g0HxCzKdm16zlKy9wRu2Nn4IR7uW538r.ORjfVmY0Z7Q2U.yB.', 'investigator'),
+  ('admin', 'admin@example.com', '$2b$10$.Z1v/ICccXcrHoo.EP5tQ.21l5tTKl8CmXpf5bnKLheqyoyjbtnC2', 'admin');
 
 INSERT INTO dream_reports (
   user_id,
