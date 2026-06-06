@@ -29,16 +29,20 @@ function App() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
-  const [token, setToken] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   // Check if token is T/F
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const isLoggedIn = !!currentUser;
 
   useEffect(() => {
     getReports();
-    getArchivedReports();
-    getLinks();
-  }, []);
+    if (isLoggedIn) {
+      getArchivedReports();
+      getLinks();
+    }
+  }, [isLoggedIn]);
 
   async function getReports() {
     const response = await fetch(`${API_URL}/reports`);
@@ -74,15 +78,19 @@ function App() {
   }
 
   function handleLoginSuccess(newToken, user) {
-    setToken(newToken);
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("user", JSON.stringify(user));
     setCurrentUser(user);
     setMessage(`Logged in as ${user.username}`);
     setPage("dashboard");
   }
 
   function handleLogout() {
-    setToken("");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setCurrentUser(null);
+    setArchivedReports([]);
+    setLinks([]);
     setMessage("Logged out");
     setPage("dashboard");
   }
@@ -155,16 +163,9 @@ function App() {
     return total + report.symbols.split(",").length;
   }, 0);
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    setPage("dashboard");
-  }
-
   return (
     <main>
-      <Header onPageChange={setPage} onArchiveClick={openArchive} isLoggedIn={isLoggedIn}/>
+      <Header onPageChange={setPage} onArchiveClick={openArchive} isLoggedIn={isLoggedIn} onLogout={handleLogout}/>
 
       {message && <p className="notice">{message}</p>}
 
@@ -223,7 +224,7 @@ function App() {
 
       {page === "signup" && <SignupPage API_URL={API_URL} setPage={setPage} />}
 
-      {page === "login" && <LoginPage API_URL={API_URL} setPage={setPage} />}
+      {page === "login" && <LoginPage API_URL={API_URL} onLoginSuccess={handleLoginSuccess} />}
     </main>
   );
 }
