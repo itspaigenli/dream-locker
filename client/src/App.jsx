@@ -204,7 +204,9 @@ function App() {
 
       {page === "signup" && <SignupPage API_URL={API_URL} />}
 
-      {page === "login" && <LoginPage API_URL={API_URL} />}
+      {page === "login" && (
+        <LoginPage API_URL={API_URL} onLoginSuccess={handleLoginSuccess} />
+      )}
     </main>
   );
 }

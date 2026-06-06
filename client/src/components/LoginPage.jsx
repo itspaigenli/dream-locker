@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function LoginPage({ API_URL }) {
+function LoginPage({ API_URL, onLoginSuccess }) {
   const [form, setForm] = useState({
     identifier: "",
     password: "",
