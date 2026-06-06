@@ -164,6 +164,8 @@ function App() {
 
       {message && <p className="notice">{message}</p>}
 
+      {/* Add login and Signup Page here */}
+
       {page === "dashboard" && (
         <Dashboard
           reports={reports}
