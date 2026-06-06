@@ -6,6 +6,8 @@ import LinksPage from "./components/LinksPage.jsx";
 import ReportDetail from "./components/ReportDetail.jsx";
 import ReportForm from "./components/ReportForm.jsx";
 import ReportsPage from "./components/ReportsPage.jsx";
+import SignupPage from "./components/SignupPage.jsx";
+import LoginPage from "./components/LoginPage.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -182,9 +184,11 @@ function App() {
 
       {page === "links" && <LinksPage links={links} />}
 
-      {page === "archive" && (
-        <ArchivePage archivedReports={archivedReports} />
-      )}
+      {page === "archive" && <ArchivePage archivedReports={archivedReports} />}
+
+      {page === "signup" && <SignupPage API_URL={API_URL} />}
+
+      {page === "login" && <LoginPage API_URL={API_URL} />}
     </main>
   );
 }
