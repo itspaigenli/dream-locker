@@ -114,7 +114,7 @@ app.post("/api/reports", authMiddleware, async (req, res) => {
   res.status(201).json(result.rows[0]);
 });
 
-app.put("/api/reports/:id", async (req, res) => {
+app.put("/api/reports/:id", authMiddleware, async (req, res) => {
   const { title, description, symbols, location, visibility } = req.body;
 
   const result = await pool.query(
@@ -128,9 +128,10 @@ app.put("/api/reports/:id", async (req, res) => {
         visibility = $5,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = $6
+        AND (user_id = $7 OR $8 = 'admin')
       RETURNING *
     `,
-    [title, description, symbols, location, visibility, req.params.id]
+    [title, description, symbols, location, visibility, req.params.id, req.user.id, req.user.role]
   );
 
   if (result.rows.length === 0) {
