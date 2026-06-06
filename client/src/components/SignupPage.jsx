@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function SignupPage({ API_URL }) {
+function SignupPage({ API_URL, setPage }) {
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -46,6 +46,8 @@ function SignupPage({ API_URL }) {
         email: "",
         password: "",
       });
+
+      setPage("login");
     } catch {
       setMessage("Could not connect to the server.");
     }

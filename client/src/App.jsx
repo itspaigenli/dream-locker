@@ -215,7 +215,7 @@ function App() {
 
       {page === "archive" && <ArchivePage archivedReports={archivedReports} />}
 
-      {page === "signup" && <SignupPage API_URL={API_URL} />}
+      {page === "signup" && <SignupPage API_URL={API_URL} setPage={setPage}/>}
 
       {page === "login" && (
         <LoginPage API_URL={API_URL} onLoginSuccess={handleLoginSuccess} />
