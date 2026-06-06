@@ -6,6 +6,7 @@ import LinksPage from "./components/LinksPage.jsx";
 import ReportDetail from "./components/ReportDetail.jsx";
 import ReportForm from "./components/ReportForm.jsx";
 import ReportsPage from "./components/ReportsPage.jsx";
+import { authenticatedFetch } from "../api/authenticatedFetch.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -39,9 +40,12 @@ function App() {
   }
 
   async function getArchivedReports() {
-    const response = await fetch(`${API_URL}/archive`);
-    const data = await response.json();
-    setArchivedReports(data);
+    try {
+      const response = await authenticatedFetch("/archive");
+      setArchivedReports(response);
+    } catch (error) {
+      setMessage(error.message);
+    }
   }
 
   async function getLinks() {
