@@ -176,5 +176,38 @@ describe("auth routes", () => {
       expect(response.body).toEqual({ error: "Invalid credentials" });
     });
 
+     it("returns a token and user details for valid credentials", async () => {
+      queryMock.mockResolvedValue({
+        rows: [
+          {
+            id: 2,
+            username: "DreamUser",
+            role: "admin",
+            password_hash: "stored-hash",
+          },
+        ],
+      });
+      
+      comparePasswordMock.mockResolvedValue(true);
+      jwtSignMock.mockReturnValue("signed.jwt.token");
+
+      const response = await request(createApp()).post("/api/auth/signin").send({
+        identifier: "  DreamUser  ",
+        password: "ValidP@ss1",
+      });
+
+      expect(jwtSignMock).toHaveBeenCalledWith(
+        { id: 2, username: "DreamUser", role: "admin" },
+        "test-secret",
+        { expiresIn: "1d" },
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        message: "Login successful",
+        token: "signed.jwt.token",
+        user: { id: 2, username: "DreamUser", role: "admin" },
+      });
+    });
+
   })
 })
