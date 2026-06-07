@@ -31,6 +31,38 @@ describe("SignupPage", () => {
 });
 
 // Test 2: Form sends signup request
+describe("SignupPage", () => {
+  it("sends the signup form", async () => {
+    let signupOptions = {};
+
+    global.fetch = async (url, options) => {
+      signupOptions = options;
+
+      return {
+        ok: true,
+        json: async () => ({
+          message: "User registered successfully",
+        }),
+      };
+    };
+
+    render(
+      <SignupPage API_URL="http://localhost:3000/api" setPage={() => {}} />,
+    );
+
+    await userEvent.type(screen.getByLabelText("Username"), "mara");
+    await userEvent.type(screen.getByLabelText("Email"), "mara@example.com");
+    await userEvent.type(screen.getByLabelText("Password"), "MaraPassword1!");
+    await userEvent.click(
+      screen.getByRole("button", { name: "Create Account" }),
+    );
+
+    expect(signupOptions.method).toBe("POST");
+    expect(signupOptions.body).toContain("mara");
+    expect(signupOptions.body).toContain("mara@example.com");
+    expect(signupOptions.body).toContain("MaraPassword1!");
+  });
+});
 
 // Test 3: Successful signup
 
