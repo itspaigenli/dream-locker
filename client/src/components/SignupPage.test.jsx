@@ -65,5 +65,32 @@ describe("SignupPage", () => {
 });
 
 // Test 3: Successful signup
+describe("SignupPage", () => {
+  it("shows a success message after signup works", async () => {
+    const fakeSignupResponse = {
+      message: "User registered successfully",
+    };
+
+    global.fetch = async () => ({
+      ok: true,
+      json: async () => fakeSignupResponse,
+    });
+
+    render(
+      <SignupPage API_URL="http://localhost:3000/api" setPage={() => {}} />,
+    );
+
+    await userEvent.type(screen.getByLabelText("Username"), "mara");
+    await userEvent.type(screen.getByLabelText("Email"), "mara@example.com");
+    await userEvent.type(screen.getByLabelText("Password"), "MaraPassword1!");
+    await userEvent.click(
+      screen.getByRole("button", { name: "Create Account" }),
+    );
+
+    expect(
+      screen.getByText("User registered successfully"),
+    ).toBeInTheDocument();
+  });
+});
 
 // Test 4: Unsuccessful signup
