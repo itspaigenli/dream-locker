@@ -44,4 +44,19 @@ describe("authMiddleware", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+  it("verifies the bearer token, attaches the user, and calls next", () => {
+    const verifiedUser = { id: 7, username: "dreamer", role: "admin" };
+    const req = { headers: { authorization: "Bearer signed.jwt.token" } };
+    const res = createResponse();
+
+    jwtVerifySpy.mockReturnValue(verifiedUser);
+
+    authMiddleware(req, res, next);
+
+    expect(jwtVerifySpy).toHaveBeenCalledWith("signed.jwt.token", "test-secret");
+    expect(req.user).toEqual(verifiedUser);
+    expect(next).toHaveBeenCalledOnce();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+  });
 })
