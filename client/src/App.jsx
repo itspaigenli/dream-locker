@@ -216,7 +216,15 @@ function App() {
         />
       )}
 
-      {page === "edit" && selectedReport && (
+      {page === "edit" && selectedReport && !isLoggedIn && (
+        <section className="panel">
+          <h1>Sign in required</h1>
+          <p>Please sign in before editing a report.</p>
+          <button onClick={() => setPage("login")}>Go to Login</button>
+        </section>
+      )}
+
+      {page === "edit" && selectedReport && isLoggedIn && (
         <ReportForm
           heading={`Edit ${selectedReport.title}`}
           form={form}
