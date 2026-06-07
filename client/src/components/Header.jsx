@@ -1,4 +1,4 @@
-function Header({ onPageChange, onArchiveClick, isLoggedIn, currentUser, onLogout }) {
+function Header({ onPageChange, onArchiveClick, onLinksClick, isLoggedIn, currentUser, onLogout }) {
 
   return (
     <header className="site-header">
@@ -20,7 +20,7 @@ function Header({ onPageChange, onArchiveClick, isLoggedIn, currentUser, onLogou
         <button type="button" onClick={() => onPageChange("new")}>
           New Report
         </button>
-        <button type="button" onClick={() => onPageChange("links")}>
+        <button type="button" onClick={onLinksClick}>
           Links
         </button>
 
