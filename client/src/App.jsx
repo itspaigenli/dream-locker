@@ -76,6 +76,17 @@ function App() {
   }
 
   async function openArchive() {
+    if (!isLoggedIn) {
+      setMessage("Please sign in to view the archive.");
+      setPage("login");
+      return;
+    }
+
+    if (!canViewRestrictedPages()) {
+      setMessage("Only investigators or admins can access the archive.");
+      return;
+    }
+    
     try {
       const data = await authenticatedFetch("/archive", token);
       setArchivedReports(data);
@@ -157,6 +168,10 @@ function App() {
 
     return total + report.symbols.split(",").length;
   }, 0);
+
+  function canViewRestrictedPages() {
+    return currentUser?.role === "investigator" || currentUser?.role === "admin";
+  }
 
   return (
     <main>
