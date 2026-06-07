@@ -3,8 +3,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 // A customized fetch wrapper that automatically injects the JWT token
 // into the Authorization header for every request.
 
-export async function authenticatedFetch (endpoint, options={}){
-    const token = localStorage.getItem("token");
+export async function authenticatedFetch (endpoint, token, options={}){
 
     const headers = {
         "Content-Type": "application/json",

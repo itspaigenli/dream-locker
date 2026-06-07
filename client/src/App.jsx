@@ -28,6 +28,7 @@ function App() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
+  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
@@ -37,34 +38,12 @@ function App() {
 
   useEffect(() => {
     getReports();
-    if (isLoggedIn) {
-      getArchivedReports();
-      getLinks();
-    }
-  }, [isLoggedIn]);
+  }, []);
 
   async function getReports() {
     const response = await fetch(`${API_URL}/reports`);
     const data = await response.json();
     setReports(data);
-  }
-
-  async function getArchivedReports() {
-    try {
-      const data = await authenticatedFetch("/archive");
-      setArchivedReports(data);
-    } catch (error) {
-      setMessage(error.message);
-    }
-  }
-
-  async function getLinks() {
-    try {
-      const data = await authenticatedFetch("/report-links");
-      setLinks(data);
-    } catch (error) {
-      setMessage(error.message);
-    }
   }
 
   function updateForm(event) {
@@ -80,6 +59,7 @@ function App() {
     localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(user));
     setCurrentUser(user);
+    setToken(newToken);
     setMessage(`Logged in as ${user.username}`);
     setPage("dashboard");
   }
@@ -95,8 +75,23 @@ function App() {
   }
 
   async function openArchive() {
-    await getArchivedReports();
-    setPage("archive");
+    try {
+      const data = await authenticatedFetch("/archive", token);
+      setArchivedReports(data);
+      setPage("archive");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  async function openLinks() {
+    try {
+      const data = await authenticatedFetch("/report-links", token);
+      setLinks(data);
+      setPage("links");
+    } catch (error) {
+      setMessage(error.message);
+    }
   }
 
   async function openReport(reportId) {
@@ -122,7 +117,7 @@ function App() {
     event.preventDefault();
 
     try {
-      const data = await authenticatedFetch("/reports", {
+      const data = await authenticatedFetch("/reports", token, {
         method: "POST",
         body: JSON.stringify(form),
       });
@@ -140,7 +135,7 @@ function App() {
     event.preventDefault();
 
     try {
-      const data = await authenticatedFetch(`/reports/${selectedReport.id}`, {
+      const data = await authenticatedFetch(`/reports/${selectedReport.id}`, token, {
         method: "PUT",
         body: JSON.stringify(form),
       });
@@ -164,11 +159,16 @@ function App() {
 
   return (
     <main>
-      <Header onPageChange={setPage} onArchiveClick={openArchive} isLoggedIn={isLoggedIn} currentUser={currentUser} onLogout={handleLogout}/>
+      <Header 
+        onPageChange={setPage} 
+        onArchiveClick={openArchive}
+        onLinksClick={openLinks} 
+        isLoggedIn={isLoggedIn} 
+        currentUser={currentUser} 
+        onLogout={handleLogout}
+      />
 
       {message && <p className="notice">{message}</p>}
-
-      {/* Add login and Signup Page here */}
 
       {page === "dashboard" && (
         <Dashboard
