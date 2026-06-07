@@ -85,5 +85,22 @@ describe("auth routes", () => {
       });
     });
 
+    it("returns 400 when signup validation fails", async () => {
+      const response = await request(createApp()).post("/api/auth/signup").send({
+        username: "ab",
+        email: "not-an-email",
+        password: "weak",
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: "Invalid email" });
+      expect(hashPasswordMock).not.toHaveBeenCalled();
+      expect(queryMock).not.toHaveBeenCalled();
+    });
+
+
+
+
+
   })
 })
