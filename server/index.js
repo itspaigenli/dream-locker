@@ -128,7 +128,8 @@ app.put("/api/reports/:id", authMiddleware, async (req, res) => {
         visibility = $5,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = $6
-        AND (user_id = $7 OR $8 = 'admin')
+        AND ($8 = 'admin'
+        OR (user_id = $7 AND archived = false))
       RETURNING *
     `,
     [title, description, symbols, location, visibility, req.params.id, req.user.id, req.user.role]
