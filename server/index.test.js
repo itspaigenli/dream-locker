@@ -110,4 +110,43 @@ describe("report routes", () => {
     expect(response.status).toBe(201);
     expect(response.body).toEqual(createdReport);
   });
+
+  it("updates a report from PUT /api/reports/:id", async () => {
+    const updatedReport = {
+      id: 5,
+      title: "Updated Dream",
+      description: "Now with clearer details",
+      symbols: "clock,bird",
+      location: "tower",
+      visibility: "public",
+    };
+    queryMock.mockResolvedValue({ rows: [updatedReport] });
+
+    const payload = {
+      title: "Updated Dream",
+      description: "Now with clearer details",
+      symbols: "clock,bird",
+      location: "tower",
+      visibility: "public",
+    };
+
+    const response = await request(app).put("/api/reports/5").send(payload);
+
+    expect(queryMock).toHaveBeenCalledWith(
+      expect.stringContaining("UPDATE dream_reports"),
+      [
+        payload.title,
+        payload.description,
+        payload.symbols,
+        payload.location,
+        payload.visibility,
+        "5",
+        7,
+        "admin",
+      ],
+    );
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(updatedReport);
+  });
+
 });
