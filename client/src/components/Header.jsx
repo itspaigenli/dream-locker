@@ -6,6 +6,9 @@ function Header({
   currentUser,
   onLogout,
 }) {
+  const canReviewEvidence =
+    currentUser?.role === "investigator" || currentUser?.role === "admin";
+
   return (
     <header className="site-header">
       <div className="brand-area">
@@ -44,13 +47,17 @@ function Header({
         <button type="button" onClick={() => onPageChange("reports")}>
           Reports
         </button>
-        <button type="button" onClick={() => onPageChange("new")}>
-          New Report
-        </button>
-        <button type="button" onClick={onLinksClick}>
-          Links
-        </button>
         {isLoggedIn && (
+          <button type="button" onClick={() => onPageChange("new")}>
+            New Report
+          </button>
+        )}
+        {canReviewEvidence && (
+          <button type="button" onClick={onLinksClick}>
+            Links
+          </button>
+        )}
+        {canReviewEvidence && (
           <button type="button" onClick={onArchiveClick}>
             Archive
           </button>
@@ -60,7 +67,7 @@ function Header({
       <div className="nav-actions">
         {isLoggedIn ? (
           <>
-            <span className="nav-user">Signed in: {currentUser.username}</span>
+            <span className="nav-user">{currentUser.username}</span>
             <button className="nav-cta" type="button" onClick={onLogout}>
               Logout
             </button>

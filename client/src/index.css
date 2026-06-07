@@ -109,7 +109,7 @@ main {
 
 .site-header {
   display: grid;
-  grid-template-columns: minmax(170px, 1fr) auto minmax(170px, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 20px;
   margin-bottom: 18px;
@@ -192,7 +192,9 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 28px;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  min-width: 0;
 }
 
 .nav button,
@@ -220,15 +222,21 @@ main {
   justify-content: flex-end;
   align-items: center;
   gap: 14px;
+  min-width: max-content;
 }
 
 .nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
   border: 1px solid rgba(167, 181, 154, 0.3);
   border-radius: 999px;
-  padding: 0.42rem 0.7rem;
+  padding: 0.28rem 0.62rem;
   color: var(--accent);
   background: rgba(167, 181, 154, 0.08);
-  font-size: 1.05rem;
+  font-family: "Spectral", Georgia, serif;
+  font-size: 0.86rem;
   font-weight: 800;
 }
 
@@ -510,6 +518,7 @@ main {
 }
 
 .actions button {
+  flex: 1 1 180px;
   min-height: 52px;
   padding-block: 0.55rem;
 }
