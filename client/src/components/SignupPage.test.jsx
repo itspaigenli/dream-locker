@@ -94,3 +94,28 @@ describe("SignupPage", () => {
 });
 
 // Test 4: Unsuccessful signup
+describe("SignupPage", () => {
+  it("shows an error message when signup fails", async () => {
+    const fakeErrorResponse = {
+      error: "Username already exists",
+    };
+
+    global.fetch = async () => ({
+      ok: false,
+      json: async () => fakeErrorResponse,
+    });
+
+    render(
+      <SignupPage API_URL="http://localhost:3000/api" setPage={() => {}} />,
+    );
+
+    await userEvent.type(screen.getByLabelText("Username"), "mara");
+    await userEvent.type(screen.getByLabelText("Email"), "mara@example.com");
+    await userEvent.type(screen.getByLabelText("Password"), "MaraPassword1!");
+    await userEvent.click(
+      screen.getByRole("button", { name: "Create Account" }),
+    );
+
+    expect(screen.getByText("Username already exists")).toBeInTheDocument();
+  });
+});
