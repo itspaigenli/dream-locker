@@ -132,6 +132,20 @@ describe("auth routes", () => {
       expect(response.status).toBe(409);
       expect(response.body).toEqual({ error: "Username already exists" });
     });
+  })
 
+  describe("POST /api/auth/signin", () => {
+     it("returns 400 when identifier or password is missing", async () => {
+      const response = await request(createApp()).post("/api/auth/signin").send({
+        identifier: "",
+        password: "ValidP@ss1",
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: "Username/Email and password are required",
+      });
+      expect(queryMock).not.toHaveBeenCalled();
+    });
   })
 })
