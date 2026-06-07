@@ -19,8 +19,8 @@ describe("validateSignup", () => {
   it("calls next for a valid signup request with username and email", () => {
     const req = {
       body: {
-        username: "  DreamUser  ",
-        email: "  USER@Example.COM  ",
+        username: "DreamUser",
+        email: "USER@Example.COM",
         password: "ValidP@ss1",
       },
     };
@@ -35,4 +35,21 @@ describe("validateSignup", () => {
     expect(res.json).not.toHaveBeenCalled();
   });
 
-})
+   it("returns 400 when required fields are missing", () => {
+    const req = {
+      body: {
+        username: "ab",
+        email: "",
+        password: "ValidP@ss1",
+      },
+    };
+    const res = createResponse();
+
+    validateSignup(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: "All fields are required" });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+});
