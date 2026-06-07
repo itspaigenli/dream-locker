@@ -1,4 +1,4 @@
-function ArchivePage({ archivedReports }) {
+function ArchivePage({ archivedReports, onOpenReport }) {
   return (
     <section className="panel">
       <p className="section-label">Admin Surface</p>
@@ -25,8 +25,8 @@ function ArchivePage({ archivedReports }) {
                 <dd>{report.location || "Unknown"}</dd>
               </div>
             </dl>
-            <button type="button" disabled>
-              Archived
+            <button type="button" onClick={() => onOpenReport(report.id)}>
+              View Case File
             </button>
           </article>
         ))}
