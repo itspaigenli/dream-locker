@@ -59,4 +59,23 @@ describe("authMiddleware", () => {
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
   });
-})
+
+  it("returns 403 when token verification fails", () => {
+    const req = { headers: { authorization: "Bearer invalid.token" } };
+    const res = createResponse();
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    jwtVerifySpy.mockImplementation(() => {
+      throw new Error("invalid token");
+    });
+
+    authMiddleware(req, res, next);
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith("invalid token");
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ error: "No access in your role." });
+    expect(next).not.toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
+  });
+});
