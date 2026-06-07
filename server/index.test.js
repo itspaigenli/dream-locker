@@ -81,4 +81,33 @@ describe("report routes", () => {
     expect(response.body).toEqual(report);
   });
 
+  it("creates a report from POST /api/reports", async () => {
+    const createdReport = {
+      id: 3,
+      user_id: 7,
+      title: "Ocean Elevator",
+      description: "Descending into blue water",
+      symbols: "ocean,elevator",
+      location: "elevator",
+      visibility: "private",
+    };
+    queryMock.mockResolvedValue({ rows: [createdReport] });
+
+    const payload = {
+      title: "Ocean Elevator",
+      description: "Descending into blue water",
+      symbols: "ocean,elevator",
+      location: "elevator",
+      visibility: "private",
+    };
+
+    const response = await request(app).post("/api/reports").send(payload);
+
+    expect(queryMock).toHaveBeenCalledWith(
+      expect.stringContaining("INSERT INTO dream_reports"),
+      [7, payload.title, payload.description, payload.symbols, payload.location, payload.visibility],
+    );
+    expect(response.status).toBe(201);
+    expect(response.body).toEqual(createdReport);
+  });
 });
