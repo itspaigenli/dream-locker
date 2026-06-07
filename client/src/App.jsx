@@ -80,10 +80,22 @@ function App() {
     setArchivedReports([]);
     setLinks([]);
     setMessage("Logged out");
+    setToken("");
     setPage("dashboard");
   }
 
   async function openArchive() {
+    if (!isLoggedIn) {
+      setMessage("Please sign in to view the archive.");
+      setPage("login");
+      return;
+    }
+
+    if (!canViewRestrictedPages()) {
+      setMessage("Only investigators or admins can access the archive.");
+      return;
+    }
+
     try {
       const data = await authenticatedFetch("/archive", token);
       setArchivedReports(data);
@@ -95,6 +107,17 @@ function App() {
   }
 
   async function openLinks() {
+    if (!isLoggedIn) {
+      setMessage("Please sign in to view the archive.");
+      setPage("login");
+      return;
+    }
+
+    if (!canViewRestrictedPages()) {
+      setMessage("Only investigators or admins can access the archive.");
+      return;
+    }
+    
     try {
       const data = await authenticatedFetch("/report-links", token);
       setLinks(data);
@@ -192,6 +215,10 @@ function App() {
     return total + report.symbols.split(",").length;
   }, 0);
 
+  function canViewRestrictedPages() {
+    return currentUser?.role === "investigator" || currentUser?.role === "admin";
+  }
+
   return (
     <main>
       <Header 
@@ -232,7 +259,15 @@ function App() {
         />
       )}
 
-      {page === "new" && (
+      {page === "new" && !isLoggedIn && (
+        <section className="panel">
+          <h1>Sign in required</h1>
+          <p>Please sign in before filing a dream report.</p>
+          <button onClick={() => setPage("login")}>Go to Login</button>
+        </section>
+      )}
+
+      {page === "new" && isLoggedIn &&(
         <ReportForm
           heading="New Dream Report"
           form={form}
@@ -242,7 +277,15 @@ function App() {
         />
       )}
 
-      {page === "edit" && selectedReport && (
+      {page === "edit" && selectedReport && !isLoggedIn && (
+        <section className="panel">
+          <h1>Sign in required</h1>
+          <p>Please sign in before editing a report.</p>
+          <button onClick={() => setPage("login")}>Go to Login</button>
+        </section>
+      )}
+
+      {page === "edit" && selectedReport && isLoggedIn && (
         <ReportForm
           heading={`Edit ${selectedReport.title}`}
           form={form}
