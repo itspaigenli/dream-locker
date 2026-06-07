@@ -21,5 +21,9 @@ describe("password utils", () => {
     ).resolves.toBe(false);
   });
 
- 
+  it("returns false when either password input is missing", async () => {
+    await expect(comparePassword("", "hashed-password")).resolves.toBe(false);
+    await expect(comparePassword("password", "")).resolves.toBe(false);
+    await expect(comparePassword("", "")).resolves.toBe(false);
+  });
 });
