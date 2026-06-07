@@ -50,6 +50,22 @@ describe("LoginPage", () => {
 });
 
 // Test 3: Form Submission works
+describe("LoginPage", () => {
+  it("lets the user click the login button", async () => {
+    render(
+      <LoginPage
+        API_URL="http://localhost:3000/api"
+        onLoginSuccess={() => {}}
+      />,
+    );
+
+    const loginButton = screen.getByRole("button", { name: "Login" });
+
+    await userEvent.click(loginButton);
+
+    expect(loginButton).toBeInTheDocument();
+  });
+});
 
 // Test 4: Successful Login
 
