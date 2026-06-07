@@ -98,7 +98,22 @@ describe("auth routes", () => {
       expect(queryMock).not.toHaveBeenCalled();
     });
 
+    it("returns 409 when the email already exists", async () => {
+      hashPasswordMock.mockResolvedValue("hashed-password");
+      queryMock.mockRejectedValue({
+        code: "23505",
+        constraint: "users_email_key",
+      });
 
+      const response = await request(createApp()).post("/api/auth/signup").send({
+        username: "DreamUser",
+        email: "user@example.com",
+        password: "ValidP@ss1",
+      });
+
+      expect(response.status).toBe(409);
+      expect(response.body).toEqual({ error: "Email already exists" });
+    });
 
 
 
