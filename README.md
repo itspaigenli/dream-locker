@@ -97,6 +97,25 @@ dream-locker/
     package.json
 ```
 
+## Security Considerations & Design Decisions
+
+1. **Role-Based Access Control (RBAC)**: Defined strict access scopes. `Dreamers` only fetch public logs. `Investigators` and `Admins` have privileged access to `/api/archive` and `/api/report-links`.
+2. **On-Demand Loading & State Protection**: To eliminate security vulnerabilities and accidental 403 network noise, protected routes are requested dynamically via user action. The `token` is maintained as a single source of truth within React State and injected as arguments via `authenticatedFetch`.
+3. **Password Security**: Passwords are securely hashed with `bcrypt` using **10 salt rounds** before storage. Plain-text passwords are never exposed or logged.
+
+## Testing Strategy
+
+The main testing focus is frontend and backend authentication and authorization because these are the most security-critical parts of the app.
+
+Covered by tests:
+- password hashing and password comparison
+- signup validation rules
+- JWT authentication middleware
+- signup and signin routes
+- protected report creation
+- owner/admin report update authorization
+- restricted archive/report-link access behavior
+
 ## Setup Instructions
 
 These steps are for setting up the project on another computer.
@@ -307,8 +326,6 @@ npm test
 
 Runs server tests with Vitest.
 
-Current note: server test files still need to be added.
-
 ## Client Scripts
 
 Run these commands from the `client/` folder.
@@ -338,8 +355,6 @@ npm test
 ```
 
 Runs client tests with Vitest.
-
-Current note: client test files still need to be added.
 
 ## Current API Routes
 
@@ -581,3 +596,22 @@ Do not commit:
 - `.env`
 - `client/dist`
 - `.DS_Store`
+
+## Team Contributions
+
+### Siyi
+- Implemented custom signup and signin flow backend
+- Added bcrypt password hashing
+- Added JWT authentication middleware
+- Added role-based authorization middleware
+- Protected backend routes for reports, archive, and report links
+- Added authenticated frontend request helper
+- Added/updated auth and protected route tests backend
+
+### Paige
+- Built the original Dream Evidence Locker app structure and UI
+- Created the React pages and navigation flow
+- Set up PostgreSQL schema and seed data
+- Added frontend auth state and role-based UI behavior
+- Added Login and Signup Page
+- Added testing frontend
