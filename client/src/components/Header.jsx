@@ -1,4 +1,5 @@
-function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
+function Header({ onPageChange, onArchiveClick, isLoggedIn, currentUser, onLogout }) {
+
   return (
     <header className="site-header">
       <button
@@ -22,10 +23,14 @@ function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
         <button type="button" onClick={() => onPageChange("links")}>
           Links
         </button>
-        <button type="button" onClick={onArchiveClick}>
-          Archive
-        </button>
-        {currentUser ? (
+
+        {isLoggedIn && (
+          <button type="button" onClick={onArchiveClick}>
+            Archive
+          </button>
+        )}
+
+        {isLoggedIn ? (
           <>
             <span className="nav-user">Signed in: {currentUser.username}</span>
             <button type="button" onClick={onLogout}>
@@ -42,6 +47,7 @@ function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
             </button>
           </>
         )}
+       
       </nav>
     </header>
   );

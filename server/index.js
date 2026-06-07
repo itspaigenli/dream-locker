@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import pool from "./db/pool.js";
 import authRoutes from "./routes/auth.js";
+import { authMiddleware, requireRole } from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -68,7 +69,8 @@ app.get("/api/reports/:id", async (req, res) => {
   res.json(result.rows[0]);
 });
 
-app.get("/api/archive", async (req, res) => {
+// Only investigators or admins can access archived files!
+app.get("/api/archive", authMiddleware, requireRole(['investigator', 'admin']), async (req, res) => {
   const result = await pool.query(`
     SELECT
       dream_reports.id,
@@ -88,9 +90,10 @@ app.get("/api/archive", async (req, res) => {
   res.json(result.rows);
 });
 
-app.post("/api/reports", async (req, res) => {
+// Anyone with a valid account can create a report.
+app.post("/api/reports", authMiddleware, async (req, res) => {
   const { title, description, symbols, location, visibility } = req.body;
-  const temporaryUserId = 1;
+  const userId = req.user.id;
 
   const result = await pool.query(
     `
@@ -105,13 +108,13 @@ app.post("/api/reports", async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `,
-    [temporaryUserId, title, description, symbols, location, visibility]
+    [userId, title, description, symbols, location, visibility]
   );
 
   res.status(201).json(result.rows[0]);
 });
 
-app.put("/api/reports/:id", async (req, res) => {
+app.put("/api/reports/:id", authMiddleware, async (req, res) => {
   const { title, description, symbols, location, visibility } = req.body;
 
   const result = await pool.query(
@@ -125,9 +128,11 @@ app.put("/api/reports/:id", async (req, res) => {
         visibility = $5,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = $6
+        AND ($8 = 'admin'
+        OR (user_id = $7 AND archived = false))
       RETURNING *
     `,
-    [title, description, symbols, location, visibility, req.params.id]
+    [title, description, symbols, location, visibility, req.params.id, req.user.id, req.user.role]
   );
 
   if (result.rows.length === 0) {
@@ -138,7 +143,7 @@ app.put("/api/reports/:id", async (req, res) => {
   res.json(result.rows[0]);
 });
 
-app.get("/api/report-links", async (req, res) => {
+app.get("/api/report-links", authMiddleware, requireRole(["investigator", "admin"]), async (req, res) => {
   const result = await pool.query(`
     SELECT
       report_links.id,

@@ -6,6 +6,7 @@ import LinksPage from "./components/LinksPage.jsx";
 import ReportDetail from "./components/ReportDetail.jsx";
 import ReportForm from "./components/ReportForm.jsx";
 import ReportsPage from "./components/ReportsPage.jsx";
+import { authenticatedFetch } from "../api/authenticatedFetch.js";
 import SignupPage from "./components/SignupPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 
@@ -27,31 +28,22 @@ function App() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState("");
-  const [token, setToken] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  // Check if token is T/F
+  const isLoggedIn = !!currentUser;
 
   useEffect(() => {
     getReports();
-    getArchivedReports();
-    getLinks();
   }, []);
 
   async function getReports() {
     const response = await fetch(`${API_URL}/reports`);
     const data = await response.json();
     setReports(data);
-  }
-
-  async function getArchivedReports() {
-    const response = await fetch(`${API_URL}/archive`);
-    const data = await response.json();
-    setArchivedReports(data);
-  }
-
-  async function getLinks() {
-    const response = await fetch(`${API_URL}/report-links`);
-    const data = await response.json();
-    setLinks(data);
   }
 
   function updateForm(event) {
@@ -64,22 +56,42 @@ function App() {
   }
 
   function handleLoginSuccess(newToken, user) {
-    setToken(newToken);
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("user", JSON.stringify(user));
     setCurrentUser(user);
+    setToken(newToken);
     setMessage(`Logged in as ${user.username}`);
     setPage("dashboard");
   }
 
   function handleLogout() {
-    setToken("");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setCurrentUser(null);
+    setArchivedReports([]);
+    setLinks([]);
     setMessage("Logged out");
     setPage("dashboard");
   }
 
   async function openArchive() {
-    await getArchivedReports();
-    setPage("archive");
+    try {
+      const data = await authenticatedFetch("/archive", token);
+      setArchivedReports(data);
+      setPage("archive");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  async function openLinks() {
+    try {
+      const data = await authenticatedFetch("/report-links", token);
+      setLinks(data);
+      setPage("links");
+    } catch (error) {
+      setMessage(error.message);
+    }
   }
 
   async function openReport(reportId) {
@@ -104,37 +116,37 @@ function App() {
   async function createReport(event) {
     event.preventDefault();
 
-    const response = await fetch(`${API_URL}/reports`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const data = await authenticatedFetch("/reports", token, {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
 
-    const newReport = await response.json();
-    setMessage(`Report filed: ${newReport.title}`);
-    setForm(emptyForm);
-    await getReports();
-    setPage("reports");
+      setMessage(`Report filed: ${data.title}`);
+      setForm(emptyForm);
+      await getReports();
+      setPage("reports");
+    } catch (error) {
+      setMessage(error.message);
+    }
   }
 
   async function updateReport(event) {
     event.preventDefault();
 
-    const response = await fetch(`${API_URL}/reports/${selectedReport.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const data = await authenticatedFetch(`/reports/${selectedReport.id}`, token, {
+        method: "PUT",
+        body: JSON.stringify(form),
+      });
 
-    const updatedReport = await response.json();
-    setMessage(`Report updated: ${updatedReport.title}`);
-    await getReports();
-    setSelectedReport(updatedReport);
-    setPage("report");
+      setMessage(`Report updated: ${data.title}`);
+      await getReports();
+      setSelectedReport(data);
+      setPage("report");
+    } catch (error) {
+      setMessage(error.message);
+    }
   }
 
   const symbolCount = reports.reduce((total, report) => {
@@ -147,10 +159,12 @@ function App() {
 
   return (
     <main>
-      <Header
-        onPageChange={setPage}
+      <Header 
+        onPageChange={setPage} 
         onArchiveClick={openArchive}
-        currentUser={token ? currentUser : null}
+        onLinksClick={openLinks} 
+        isLoggedIn={isLoggedIn} 
+        currentUser={currentUser} 
         onLogout={handleLogout}
       />
 
@@ -207,11 +221,9 @@ function App() {
 
       {page === "archive" && <ArchivePage archivedReports={archivedReports} />}
 
-      {page === "signup" && <SignupPage API_URL={API_URL} />}
+      {page === "signup" && <SignupPage API_URL={API_URL} setPage={setPage} />}
 
-      {page === "login" && (
-        <LoginPage API_URL={API_URL} onLoginSuccess={handleLoginSuccess} />
-      )}
+      {page === "login" && <LoginPage API_URL={API_URL} onLoginSuccess={handleLoginSuccess} />}
     </main>
   );
 }
