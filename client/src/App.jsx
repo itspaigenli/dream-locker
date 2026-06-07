@@ -24,6 +24,7 @@ function App() {
   const [page, setPage] = useState("dashboard");
   const [reports, setReports] = useState([]);
   const [archivedReports, setArchivedReports] = useState([]);
+  const [archiveCount, setArchiveCount] = useState(0);
   const [links, setLinks] = useState([]);
   const [selectedReport, setSelectedReport] = useState(null);
   const [form, setForm] = useState(emptyForm);
@@ -38,12 +39,19 @@ function App() {
 
   useEffect(() => {
     getReports();
+    getArchiveCount();
   }, []);
 
   async function getReports() {
     const response = await fetch(`${API_URL}/reports`);
     const data = await response.json();
     setReports(data);
+  }
+
+  async function getArchiveCount() {
+    const response = await fetch(`${API_URL}/archive-count`);
+    const data = await response.json();
+    setArchiveCount(data.count);
   }
 
   function updateForm(event) {
@@ -90,6 +98,7 @@ function App() {
     try {
       const data = await authenticatedFetch("/archive", token);
       setArchivedReports(data);
+      setArchiveCount(data.length);
       setPage("archive");
     } catch (error) {
       setMessage(error.message);
@@ -120,8 +129,33 @@ function App() {
   async function openReport(reportId) {
     const response = await fetch(`${API_URL}/reports/${reportId}`);
     const data = await response.json();
+
+    if (!response.ok) {
+      setMessage(data.message);
+      return;
+    }
+
     setSelectedReport(data);
     setPage("report");
+  }
+
+  async function openProtectedReport(reportId) {
+    try {
+      const data = await authenticatedFetch(`/protected-reports/${reportId}`, token);
+      setSelectedReport(data);
+      setPage("report");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  function openLinkedReport(reportId) {
+    if (currentUser?.role === "investigator" || currentUser?.role === "admin") {
+      openProtectedReport(reportId);
+      return;
+    }
+
+    openReport(reportId);
   }
 
   function openEditReport(report) {
@@ -200,7 +234,7 @@ function App() {
       {page === "dashboard" && (
         <Dashboard
           reports={reports}
-          archivedReports={archivedReports}
+          archiveCount={archiveCount}
           symbolCount={symbolCount}
           onPageChange={setPage}
           onOpenReport={openReport}
@@ -260,9 +294,16 @@ function App() {
         />
       )}
 
-      {page === "links" && <LinksPage links={links} />}
+      {page === "links" && (
+        <LinksPage links={links} onOpenReport={openLinkedReport} />
+      )}
 
-      {page === "archive" && <ArchivePage archivedReports={archivedReports} />}
+      {page === "archive" && (
+        <ArchivePage
+          archivedReports={archivedReports}
+          onOpenReport={openProtectedReport}
+        />
+      )}
 
       {page === "signup" && <SignupPage API_URL={API_URL} setPage={setPage} />}
 

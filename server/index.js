@@ -69,6 +69,16 @@ app.get("/api/reports/:id", async (req, res) => {
   res.json(result.rows[0]);
 });
 
+app.get("/api/archive-count", async (req, res) => {
+  const result = await pool.query(`
+    SELECT COUNT(*) AS count
+    FROM dream_reports
+    WHERE archived = true
+  `);
+
+  res.json({ count: Number(result.rows[0].count) });
+});
+
 // Only investigators or admins can access archived files!
 app.get("/api/archive", authMiddleware, requireRole(['investigator', 'admin']), async (req, res) => {
   const result = await pool.query(`
@@ -88,6 +98,33 @@ app.get("/api/archive", authMiddleware, requireRole(['investigator', 'admin']), 
   `);
 
   res.json(result.rows);
+});
+
+app.get("/api/protected-reports/:id", authMiddleware, requireRole(["investigator", "admin"]), async (req, res) => {
+  const result = await pool.query(
+    `
+      SELECT
+        dream_reports.id,
+        dream_reports.title,
+        dream_reports.description,
+        dream_reports.symbols,
+        dream_reports.location,
+        dream_reports.visibility,
+        dream_reports.archived,
+        dream_reports.created_at,
+        dream_reports.updated_at
+      FROM dream_reports
+      WHERE dream_reports.id = $1
+    `,
+    [req.params.id]
+  );
+
+  if (result.rows.length === 0) {
+    res.status(404).json({ message: "Report not found" });
+    return;
+  }
+
+  res.json(result.rows[0]);
 });
 
 // Anyone with a valid account can create a report.

@@ -2,14 +2,20 @@ function ReportDetail({ report, onBack, onEditReport }) {
   return (
     <section className="detail-layout">
       <article className="panel detail">
-        <p className="section-label">Report #{report.id}</p>
+        <p className="section-label">
+          Report #{report.id} {report.archived ? "/ Archived" : ""}
+        </p>
         <h1>{report.title}</h1>
         <p>{report.description}</p>
 
         <dl>
           <div>
             <dt>Report Type</dt>
-            <dd>Public dream evidence</dd>
+            <dd>
+              {report.archived
+                ? "Archived dream evidence"
+                : `${report.visibility} dream evidence`}
+            </dd>
           </div>
           <div>
             <dt>Symbols</dt>
@@ -26,9 +32,11 @@ function ReportDetail({ report, onBack, onEditReport }) {
         </dl>
 
         <div className="actions">
-          <button type="button" onClick={() => onEditReport(report)}>
-            Edit Report
-          </button>
+          {!report.archived && (
+            <button type="button" onClick={() => onEditReport(report)}>
+              Edit Report
+            </button>
+          )}
           <button type="button" onClick={onBack}>
             Back
           </button>

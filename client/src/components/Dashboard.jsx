@@ -1,6 +1,6 @@
 function Dashboard({
   reports,
-  archivedReports,
+  archiveCount,
   symbolCount,
   onPageChange,
   onOpenReport,
@@ -22,7 +22,7 @@ function Dashboard({
           <p>Public Reports</p>
         </article>
         <article>
-          <span>{archivedReports.length}</span>
+          <span>{archiveCount}</span>
           <p>Archived Cases</p>
         </article>
         <article>

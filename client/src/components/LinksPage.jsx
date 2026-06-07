@@ -1,4 +1,4 @@
-function LinksPage({ links }) {
+function LinksPage({ links, onOpenReport }) {
   return (
     <section className="panel">
       <div className="panel-header">
@@ -16,6 +16,20 @@ function LinksPage({ links }) {
               {link.source_title} / {link.target_title}
             </h2>
             <p>{link.reason}</p>
+            <div className="actions">
+              <button
+                type="button"
+                onClick={() => onOpenReport(link.source_report_id)}
+              >
+                Open Source Report
+              </button>
+              <button
+                type="button"
+                onClick={() => onOpenReport(link.target_report_id)}
+              >
+                Open Target Report
+              </button>
+            </div>
           </article>
         ))}
       </div>
