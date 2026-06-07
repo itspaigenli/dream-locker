@@ -79,3 +79,30 @@ describe("authMiddleware", () => {
     consoleErrorSpy.mockRestore();
   });
 });
+
+describe("requireRole", () => {
+  let next;
+  let res;
+
+  beforeEach(() => {
+    next = vi.fn();
+
+    res = {
+      status: function () { return this; },
+      json: function () { return this; }
+    };
+
+    vi.spyOn(res, "status");
+    vi.spyOn(res, "json");
+  });
+
+  it("returns 401 when user is missing", () => {
+    const req = {};
+
+    requireRole(["admin"])(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ error: "Login first." });
+    expect(next).not.toHaveBeenCalled();
+  });
+})
