@@ -13,5 +13,13 @@ describe("password utils", () => {
     await expect(comparePassword(password, hashedPassword)).resolves.toBe(true);
   });
 
-  
+  it("returns false when the password does not match the hash", async () => {
+    const hashedPassword = await hashPassword("CorrectHorseBatteryStaple");
+
+    await expect(
+      comparePassword("wrong-password", hashedPassword),
+    ).resolves.toBe(false);
+  });
+
+ 
 });
