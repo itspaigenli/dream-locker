@@ -71,6 +71,7 @@ function App() {
     setArchivedReports([]);
     setLinks([]);
     setMessage("Logged out");
+    setToken("");
     setPage("dashboard");
   }
 
