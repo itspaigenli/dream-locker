@@ -1,4 +1,11 @@
-function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
+function Header({
+  onPageChange,
+  onArchiveClick,
+  onLinksClick,
+  isLoggedIn,
+  currentUser,
+  onLogout,
+}) {
   return (
     <header className="site-header">
       <div className="brand-area">
@@ -40,16 +47,18 @@ function Header({ onPageChange, onArchiveClick, currentUser, onLogout }) {
         <button type="button" onClick={() => onPageChange("new")}>
           New Report
         </button>
-        <button type="button" onClick={() => onPageChange("links")}>
+        <button type="button" onClick={onLinksClick}>
           Links
         </button>
-        <button type="button" onClick={onArchiveClick}>
-          Archive
-        </button>
+        {isLoggedIn && (
+          <button type="button" onClick={onArchiveClick}>
+            Archive
+          </button>
+        )}
       </nav>
 
       <div className="nav-actions">
-        {currentUser ? (
+        {isLoggedIn ? (
           <>
             <span className="nav-user">Signed in: {currentUser.username}</span>
             <button className="nav-cta" type="button" onClick={onLogout}>
