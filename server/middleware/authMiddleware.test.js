@@ -117,4 +117,14 @@ describe("requireRole", () => {
     });
     expect(next).not.toHaveBeenCalled();
   });
+
+  it("calls next when the user role is allowed", () => {
+    const req = { user: { role: "investigator" } };
+
+    requireRole(["investigator", "admin"])(req, res, next);
+
+    expect(next).toHaveBeenCalledOnce();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+  });
 })
