@@ -59,4 +59,26 @@ describe("report routes", () => {
     expect(response.body).toEqual(reports);
   });
 
+  it("returns public report from GET /api/reports/:id", async () => {
+    const report = {
+      id: 2,
+      title: "Red Forest",
+      description: "Trees glowing at dusk",
+      symbols: "forest,red light",
+      location: "woods",
+      visibility: "public",
+      archived: false,
+    };
+    queryMock.mockResolvedValue({ rows: [report] });
+
+    const response = await request(app).get("/api/reports/2");
+
+    expect(queryMock).toHaveBeenCalledWith(
+      expect.stringContaining("WHERE dream_reports.id = $1"),
+      ["2"],
+    );
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(report);
+  });
+
 });
