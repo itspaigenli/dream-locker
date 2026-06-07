@@ -198,7 +198,15 @@ function App() {
         />
       )}
 
-      {page === "new" && (
+      {page === "new" && !isLoggedIn && (
+        <section className="panel">
+          <h1>Sign in required</h1>
+          <p>Please sign in before filing a dream report.</p>
+          <button onClick={() => setPage("login")}>Go to Login</button>
+        </section>
+      )}
+
+      {page === "new" && isLoggedIn &&(
         <ReportForm
           heading="New Dream Report"
           form={form}
