@@ -105,4 +105,16 @@ describe("requireRole", () => {
     expect(res.json).toHaveBeenCalledWith({ error: "Login first." });
     expect(next).not.toHaveBeenCalled();
   });
+
+  it("returns 403 when the user role is not allowed", () => {
+    const req = { user: { role: "user" } };
+
+    requireRole(["investigator", "admin"])(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({
+      error: "Sorry, You do not have permission to access this resource.",
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
 })
