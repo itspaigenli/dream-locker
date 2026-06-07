@@ -21,7 +21,7 @@ describe("LoginPage", () => {
       />,
     );
 
-    expect(screen.getByText("Login")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Login" })).toBeTruthy();
     expect(screen.getByLabelText("Username or Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
@@ -71,6 +71,7 @@ describe("LoginPage", () => {
 describe("LoginPage", () => {
   it("shows a success message after login works", async () => {
     const fakeLoginResponse = {
+      message: "Login successful",
       token: "fake-token",
       user: { id: 1, username: "admin", role: "admin" },
     };
