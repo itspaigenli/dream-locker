@@ -147,5 +147,34 @@ describe("auth routes", () => {
       });
       expect(queryMock).not.toHaveBeenCalled();
     });
+
+    it("returns 401 when the password comparison fails", async () => {
+      queryMock.mockResolvedValue({
+        rows: [
+          {
+            id: 2,
+            username: "DreamUser",
+            role: "dreamer",
+            password_hash: "stored-hash",
+          },
+        ],
+      });
+
+      comparePasswordMock.mockResolvedValue(false);
+
+      const response = await request(createApp()).post("/api/auth/signin").send({
+        identifier: "DreamUser",
+        password: "wrong-password",
+      });
+
+      expect(comparePasswordMock).toHaveBeenCalledWith(
+        "wrong-password",
+        "stored-hash",
+      );
+
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual({ error: "Invalid credentials" });
+    });
+
   })
 })
