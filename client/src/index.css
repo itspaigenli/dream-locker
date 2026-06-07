@@ -410,7 +410,7 @@ main {
 }
 
 .panel {
-  padding: 28px;
+  padding: 22px;
 }
 
 .panel-header {
@@ -418,7 +418,7 @@ main {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .panel h1,
