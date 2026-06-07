@@ -2,7 +2,7 @@
 
 Dream Evidence Locker is a minimal PERN hackathon project.
 
-The app is a fictional investigation system where users submit strange dreams as evidence. Public reports are visible on the reports page. Archived reports are shown on the archive page. Report links show connections between related dream reports.
+The app is a fictional investigation system where users submit strange dreams as evidence. Dreamers file reports. Investigators review patterns and report links. Admins can access restricted evidence areas.
 
 ## Current Project Status
 
@@ -12,21 +12,45 @@ This project currently has:
 - Express server using ES modules
 - PostgreSQL database schema
 - Seed data for users, reports, archived reports, and report links
-- Dark glassmorphism CSS theme
+- Authentication routes for signup and signin
+- Password hashing with bcrypt
+- JSON Web Token login response
+- Protected server routes for report creation, report editing, archive data, and report links
+- Dark dream investigation CSS theme
+- Dashboard page
 - Public reports page
 - Single report detail page
 - New report form
 - Edit report form
 - Report links page
 - Archive page
+- Login page
+- Sign up page
 
-This project does not yet have:
+This project still needs:
 
-- Authentication
-- Authorization
-- Role-based route protection
-- Test coverage for grading requirements
+- Final authorization review against every project rule
+- Test coverage for the hackathon grading requirements
 - Security review work
+- Additional user-facing polish after the grading features are complete
+
+## Screenshots
+
+### Dashboard
+
+![Dream Evidence Locker dashboard](client/public/images/readme/dashboard.png)
+
+### Login
+
+![Dream Evidence Locker login page](client/public/images/readme/login.png)
+
+### Sign Up
+
+![Dream Evidence Locker sign up page](client/public/images/readme/signup.png)
+
+### New Report
+
+![Dream Evidence Locker new report page](client/public/images/readme/new-report.png)
 
 ## Tech Stack
 
@@ -35,14 +59,30 @@ This project does not yet have:
 - React
 - Node.js
 - Vite
+- bcrypt
+- JSON Web Tokens
 
 ## Project Structure
 
 ```text
 dream-locker/
   client/
+    api/
+      authenticatedFetch.js
+    public/
+      assets/
+      images/
     src/
       components/
+        ArchivePage.jsx
+        Dashboard.jsx
+        Header.jsx
+        LinksPage.jsx
+        LoginPage.jsx
+        ReportDetail.jsx
+        ReportForm.jsx
+        ReportsPage.jsx
+        SignupPage.jsx
       App.jsx
       index.css
       main.jsx
@@ -53,6 +93,13 @@ dream-locker/
       pool.js
       schema.sql
       seed.sql
+    middleware/
+      authMiddleware.js
+      validateAuth.js
+    routes/
+      auth.js
+    utils/
+      password.js
     index.js
     package.json
 ```
@@ -99,12 +146,13 @@ npm install
 
 Inside the `server/` folder, create a file named `.env`.
 
-Add this:
+Use `server/.env-sample` as the pattern:
 
 ```env
 DATABASE_URL=postgresql://YOUR_POSTGRES_USERNAME@localhost:5432/locker_db
 PORT=3000
 CLIENT_ORIGIN=http://localhost:5173
+JWT_SECRET=your_jwt_secret_here
 ```
 
 Replace `YOUR_POSTGRES_USERNAME` with the local PostgreSQL username.
@@ -121,6 +169,7 @@ Example:
 DATABASE_URL=postgresql://nessali@localhost:5432/locker_db
 PORT=3000
 CLIENT_ORIGIN=http://localhost:5173
+JWT_SECRET=replace_this_with_a_long_secret_value
 ```
 
 ### 6. Build the database tables
@@ -154,7 +203,7 @@ What this adds:
 - Archived resolved reports
 - Example report links
 
-The user records have placeholder password hash values. Authentication is not implemented yet.
+The user records use bcrypt password hashes.
 
 ### 8. Start the server
 
@@ -199,7 +248,7 @@ npm install
 
 Inside the `client/` folder, create a file named `.env`.
 
-Add this:
+Use `client/.env-sample` as the pattern:
 
 ```env
 VITE_API_URL=http://localhost:3000/api
@@ -259,6 +308,14 @@ npm run db:seed
 
 Adds the project seed data.
 
+```bash
+npm test
+```
+
+Runs server tests with Vitest.
+
+Current note: server test files still need to be added.
+
 ## Client Scripts
 
 Run these commands from the `client/` folder.
@@ -283,6 +340,14 @@ npm run lint
 
 Runs ESLint.
 
+```bash
+npm test
+```
+
+Runs client tests with Vitest.
+
+Current note: client test files still need to be added.
+
 ## Current API Routes
 
 Base API URL:
@@ -298,6 +363,41 @@ GET /api/health
 ```
 
 Checks that the server is running.
+
+### Auth
+
+```text
+POST /api/auth/signup
+```
+
+Creates a new dreamer account.
+
+Current request body pattern:
+
+```json
+{
+  "username": "mara",
+  "email": "mara@example.com",
+  "password": "ExamplePassword1!"
+}
+```
+
+```text
+POST /api/auth/signin
+```
+
+Signs in with a username or email and password.
+
+Current request body pattern:
+
+```json
+{
+  "identifier": "mara",
+  "password": "ExamplePassword1!"
+}
+```
+
+The signin response includes a token and user object.
 
 ### Reports
 
@@ -319,6 +419,11 @@ POST /api/reports
 
 Creates a report.
 
+Current protection:
+
+- Requires a valid login token
+- Uses the logged-in user's id as the report owner
+
 Current request body pattern:
 
 ```json
@@ -337,6 +442,12 @@ PUT /api/reports/:id
 
 Updates a report.
 
+Current protection:
+
+- Requires a valid login token
+- Allows admins to edit
+- Allows the report owner to edit if the report is not archived
+
 ### Archive
 
 ```text
@@ -344,6 +455,11 @@ GET /api/archive
 ```
 
 Returns archived reports.
+
+Current protection:
+
+- Requires a valid login token
+- Requires the `investigator` or `admin` role
 
 Archived reports represent resolved or closed evidence files.
 
@@ -354,6 +470,11 @@ GET /api/report-links
 ```
 
 Returns existing links between reports.
+
+Current protection:
+
+- Requires a valid login token
+- Requires the `investigator` or `admin` role
 
 ## Database Tables
 
@@ -415,7 +536,7 @@ Columns:
 
 ### Dashboard
 
-Shows project summary counts and recent public reports.
+Shows summary counts and recent public reports.
 
 ### All Reports
 
@@ -431,25 +552,33 @@ Shows one active public report.
 
 Shows a form for creating a report.
 
-Current note:
-
-The form does not ask for a user. The backend temporarily assigns new reports to user id `1` until authentication is added.
+Current note: report creation requires login because the backend uses the logged-in user's id.
 
 ### Edit Report
 
 Shows a form for updating a report.
 
-Current note:
-
-This page exists for base CRUD structure. Authorization rules still need to be added.
+Current note: edit requests require login. The backend currently checks owner/admin rules during update.
 
 ### Linked Reports
 
 Shows existing report links from the seed data.
 
+Current note: this page loads protected data. The backend requires an investigator or admin token.
+
 ### Archive
 
 Shows archived resolved reports.
+
+Current note: this page loads protected data. The backend requires an investigator or admin token.
+
+### Login
+
+Lets a user sign in with username or email and password.
+
+### Sign Up
+
+Lets a user create a dreamer account.
 
 ## Files That Should Not Be Committed
 
