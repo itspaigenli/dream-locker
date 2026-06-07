@@ -27,13 +27,6 @@ This project currently has:
 - Login page
 - Sign up page
 
-This project still needs:
-
-- Final authorization review against every project rule
-- Test coverage for the hackathon grading requirements
-- Security review work
-- Additional user-facing polish after the grading features are complete
-
 ## Screenshots
 
 ### Dashboard
