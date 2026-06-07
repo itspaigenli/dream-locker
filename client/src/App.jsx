@@ -86,7 +86,7 @@ function App() {
       setMessage("Only investigators or admins can access the archive.");
       return;
     }
-    
+
     try {
       const data = await authenticatedFetch("/archive", token);
       setArchivedReports(data);
@@ -97,6 +97,17 @@ function App() {
   }
 
   async function openLinks() {
+    if (!isLoggedIn) {
+      setMessage("Please sign in to view the archive.");
+      setPage("login");
+      return;
+    }
+
+    if (!canViewRestrictedPages()) {
+      setMessage("Only investigators or admins can access the archive.");
+      return;
+    }
+    
     try {
       const data = await authenticatedFetch("/report-links", token);
       setLinks(data);
