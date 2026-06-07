@@ -116,6 +116,22 @@ describe("auth routes", () => {
     });
 
 
+    it("returns 409 when the username already exists", async () => {
+      hashPasswordMock.mockResolvedValue("hashed-password");
+      queryMock.mockRejectedValue({
+        code: "23505",
+        constraint: "users_username_key",
+      });
+
+      const response = await request(createApp()).post("/api/auth/signup").send({
+        username: "DreamUser",
+        email: "user@example.com",
+        password: "ValidP@ss1",
+      });
+
+      expect(response.status).toBe(409);
+      expect(response.body).toEqual({ error: "Username already exists" });
+    });
 
   })
 })
